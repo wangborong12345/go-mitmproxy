@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/lqqyt2423/go-mitmproxy/cert"
 	rawLog "log"
 	"os"
 
@@ -24,7 +25,8 @@ type Config struct {
 	dump      string // dump filename
 	dumpLevel int    // dump level
 
-	mapperDir string
+	mapperDir   string
+	installCert bool
 }
 
 func loadConfig() *Config {
@@ -39,6 +41,7 @@ func loadConfig() *Config {
 	flag.IntVar(&config.dumpLevel, "dump_level", 0, "dump level: 0 - header, 1 - header + body")
 	flag.StringVar(&config.mapperDir, "mapper_dir", "", "mapper files dirpath")
 	flag.StringVar(&config.certPath, "cert_path", "", "path of generate cert files")
+	flag.BoolVar(&config.installCert, "install_cert", false, "install certificate to system trust list")
 	flag.Parse()
 
 	return config
@@ -92,6 +95,12 @@ func main() {
 	if config.mapperDir != "" {
 		mapper := addon.NewMapper(config.mapperDir)
 		p.AddAddon(mapper)
+	}
+
+	if config.installCert {
+		var mgr cert.SystemTrustCertMgr = cert.NewSystemTrustCertMgr()
+		certificate := p.GetCertificate()
+		mgr.Install(&certificate)
 	}
 
 	log.Fatal(p.Start())
