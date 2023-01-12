@@ -30,6 +30,12 @@ import (
 
 var errCaNotFound = errors.New("ca not found")
 
+const (
+	CaFileName     = "mitmproxy-ca.pem"
+	CaCertFileName = "mitmproxy-ca-cert.pem"
+	CaCertCerFile  = "mitmproxy-ca-cert.cer"
+)
+
 type CA struct {
 	rsa.PrivateKey
 	RootCert  x509.Certificate
@@ -165,16 +171,16 @@ func getStorePath(path string) (string, error) {
 
 // The certificate and the private key in PEM format.
 func (ca *CA) caFile() string {
-	return filepath.Join(ca.StorePath, "mitmproxy-ca.pem")
+	return filepath.Join(ca.StorePath, CaFileName)
 }
 
 // The certificate in PEM format.
 func (ca *CA) caCertFile() string {
-	return filepath.Join(ca.StorePath, "mitmproxy-ca-cert.pem")
+	return filepath.Join(ca.StorePath, CaCertFileName)
 }
 
 func (ca *CA) caCertCerFile() string {
-	return filepath.Join(ca.StorePath, "mitmproxy-ca-cert.cer")
+	return filepath.Join(ca.StorePath, CaCertCerFile)
 }
 
 func (ca *CA) load() error {
